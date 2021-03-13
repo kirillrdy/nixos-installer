@@ -43,8 +43,6 @@ func main() {
 	sh("parted", *targetDevice, "--", "set", "3", "esp", "on")
 	if *rootFileSystem == Ext4 {
 		sh("mkfs.ext4", rootPartition)
-		sh("mkswap", swapPartition)
-		sh("mkfs.fat", "-F", "32", "-n", "boot", bootPartition)
 		sh("mount", rootPartition, "/mnt")
 	} else if *rootFileSystem == Zfs {
 		zfsPoolName := "zroot"
@@ -53,6 +51,10 @@ func main() {
 		sh("zfs", "create", "-o", "mountpoint=legacy", nixosZfsDataset)
 		sh("mount", "-t", "zfs", nixosZfsDataset, "/mnt")
 	}
+
+	sh("mkswap", swapPartition)
+	sh("mkfs.fat", "-F", "32", "-n", "boot", bootPartition)
+
 	sh("mkdir", "-p", "/mnt/boot")
 	sh("mount", bootPartition, "/mnt/boot")
 	sh("swapon", swapPartition)
