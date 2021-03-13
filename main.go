@@ -28,7 +28,7 @@ func sh(cmdName string, args ...string) {
 
 func main() {
 
-	rootFileSystem := flag.String("fs", Ext4, "filesystem to use on root, currently ext4 and zfs")
+	rootFileSystem := flag.String("fs", Zfs, "filesystem to use on root, currently ext4 and zfs")
 	targetDevice := flag.String("device", "", "Device to use ")
 	flag.Parse()
 
