@@ -35,7 +35,6 @@ func main() {
 	rootPartition := *targetDevice + "1"
 	swapPartition := *targetDevice + "2"
 	bootPartition := *targetDevice + "3"
-	sh("ls")
 	sh("parted", *targetDevice, "--", "mklabel", "gpt")
 	sh("parted", *targetDevice, "--", "mkpart", "primary", "512MiB", "-8GiB")
 	sh("parted", *targetDevice, "--", "mkpart", "primary", "linux-swap", "-8GiB", "100%")
@@ -59,6 +58,7 @@ func main() {
 	sh("mount", bootPartition, "/mnt/boot")
 	sh("swapon", swapPartition)
 	sh("nixos-generate-config", "--root", "/mnt")
+	// TODO patch networkId
 	sh("nixos-install")
 
 }
