@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path"
 	"regexp"
+	"strings"
 )
 
 const Zfs = "zfs"
@@ -28,7 +29,6 @@ func sh(cmdName string, args ...string) {
 
 func main() {
 
-	isNvme := flag.Bool("nvme", false, "is target device NVME")
 	rootFileSystem := flag.String("fs", Zfs, "filesystem to use on root, currently ext4 and zfs")
 	targetDevice := flag.String("device", "", "Device to use ")
 	flag.Parse()
@@ -37,10 +37,10 @@ func main() {
 	swapPartition := *targetDevice + "2"
 	bootPartition := *targetDevice + "3"
 
-	if *isNvme {
-		rootPartition = *targetDevice + "n1p1"
-		swapPartition = *targetDevice + "n1p2"
-		bootPartition = *targetDevice + "n1p3"
+	if strings.HasPrefix(*targetDevice, "/dev/nvme") {
+		rootPartition = *targetDevice + "p1"
+		swapPartition = *targetDevice + "p2"
+		bootPartition = *targetDevice + "p3"
 	}
 
 	sh("parted", *targetDevice, "--", "mklabel", "gpt")
