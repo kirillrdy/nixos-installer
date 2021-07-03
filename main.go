@@ -55,7 +55,6 @@ func main() {
 		zfsPoolName := "zroot"
 		nixosZfsDataset := path.Join(zfsPoolName, "root")
 		sh("zpool", "create", "-O", "mountpoint=none", "-O", "atime=off",
-			"-O", "autotrim=on",
 			"-O", "compression=zstd", "-O", "xattr=sa", "-O", "acltype=posixacl", "-o", "ashift=12", "-R", "/mnt", zfsPoolName, rootPartition)
 		sh("zfs", "create", "-o", "mountpoint=legacy", nixosZfsDataset)
 		sh("mount", "-t", "zfs", nixosZfsDataset, "/mnt")
