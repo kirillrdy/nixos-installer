@@ -73,13 +73,12 @@ func main() {
 	configFilePath := "/mnt/etc/nixos/configuration.nix"
 	content, err := os.ReadFile(configFilePath)
 	crash(err)
-	regex := regexp.MustCompile("{\n")
-	newConfig := regex.ReplaceAllString(string(content), "{\n networking.hostId = \"00000000\";")
+	regex := regexp.MustCompile("\n{\n")
+	newConfig := regex.ReplaceAllString(string(content), "\n{\n  networking.hostId = \"00000000\";\n")
 	//TODO correct permissions
 	err = os.WriteFile(configFilePath, []byte(newConfig), os.ModePerm)
 	crash(err)
 
-	// TODO patch networkId
 	sh("nixos-install")
 
 }
