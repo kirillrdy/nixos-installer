@@ -28,6 +28,7 @@ func sh(cmdName string, args ...string) {
 
 func main() {
 
+	isNvme := flag.Bool("nvme", false, "is target device NVME")
 	rootFileSystem := flag.String("fs", Zfs, "filesystem to use on root, currently ext4 and zfs")
 	targetDevice := flag.String("device", "", "Device to use ")
 	flag.Parse()
@@ -35,6 +36,13 @@ func main() {
 	rootPartition := *targetDevice + "1"
 	swapPartition := *targetDevice + "2"
 	bootPartition := *targetDevice + "3"
+
+	if *isNvme {
+		rootPartition = *targetDevice + "n1p1"
+		swapPartition = *targetDevice + "n1p2"
+		bootPartition = *targetDevice + "n1p3"
+	}
+
 	sh("parted", *targetDevice, "--", "mklabel", "gpt")
 	sh("parted", *targetDevice, "--", "mkpart", "primary", "512MiB", "-8GiB")
 	sh("parted", *targetDevice, "--", "mkpart", "primary", "linux-swap", "-8GiB", "100%")
