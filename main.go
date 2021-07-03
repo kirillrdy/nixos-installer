@@ -46,7 +46,7 @@ func main() {
 	} else if *rootFileSystem == Zfs {
 		zfsPoolName := "zroot"
 		nixosZfsDataset := path.Join(zfsPoolName, "root")
-		sh("zpool", "create", "-O", "mountpoint=none", "-O", "atime=off", "-O", "compression=lz4", "-O", "xattr=sa", "-O", "acltype=posixacl", "-o", "ashift=12", "-R", "/mnt", zfsPoolName, rootPartition)
+		sh("zpool", "create", "-O", "mountpoint=none", "-O", "atime=off", "-O", "compression=zstd", "-O", "xattr=sa", "-O", "acltype=posixacl", "-o", "ashift=12", "-R", "/mnt", zfsPoolName, rootPartition)
 		sh("zfs", "create", "-o", "mountpoint=legacy", nixosZfsDataset)
 		sh("mount", "-t", "zfs", nixosZfsDataset, "/mnt")
 	}
