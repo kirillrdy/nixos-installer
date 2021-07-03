@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"regexp"
 )
 
 const Zfs = "zfs"
@@ -68,6 +69,16 @@ func main() {
 	sh("mount", bootPartition, "/mnt/boot")
 	sh("swapon", swapPartition)
 	sh("nixos-generate-config", "--root", "/mnt")
+
+	configFilePath := "/mnt/etc/nixos/configuration.nix"
+	content, err := os.ReadFile(configFilePath)
+	crash(err)
+	regex := regexp.MustCompile("{\n")
+	newConfig := regex.ReplaceAllString(string(content), "{\n networking.hostId = \"00000000\";")
+	//TODO correct permissions
+	err = os.WriteFile(configFilePath, []byte(newConfig), os.ModePerm)
+	crash(err)
+
 	// TODO patch networkId
 	sh("nixos-install")
 
