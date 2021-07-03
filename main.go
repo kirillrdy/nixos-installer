@@ -23,8 +23,7 @@ func sh(cmdName string, args ...string) {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
-	err := cmd.Run()
-	crash(err)
+	crash(cmd.Run())
 }
 
 func main() {
@@ -76,8 +75,7 @@ func main() {
 	regex := regexp.MustCompile("\n{\n")
 	newConfig := regex.ReplaceAllString(string(content), "\n{\n  networking.hostId = \"00000000\";\n")
 	//TODO correct permissions
-	err = os.WriteFile(configFilePath, []byte(newConfig), os.ModePerm)
-	crash(err)
+	crash(os.WriteFile(configFilePath, []byte(newConfig), os.ModePerm))
 
 	sh("nixos-install")
 
