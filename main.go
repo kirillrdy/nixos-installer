@@ -10,26 +10,26 @@ import (
 	"strings"
 )
 
-const Zfs = "zfs"
-const Ext4 = "ext4"
+const zfs = "zfs"
+const ext4 = "ext4"
 
-func crash(err error) {
+func check(err error) {
 	if err != nil {
 		log.Panic(err)
 	}
 }
 
-func sh(cmdName string, args ...string) {
+func execute(cmdName string, args ...string) {
 	cmd := exec.Command(cmdName, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
-	crash(cmd.Run())
+	check(cmd.Run())
 }
 
 func main() {
 
-	rootFileSystem := flag.String("fs", Zfs, "filesystem to use on root, currently ext4 and zfs")
+	rootFileSystem := flag.String("fs", zfs, "filesystem to use on root, currently ext4 and zfs")
 	targetDevice := flag.String("device", "", "Device to use ")
 	flag.Parse()
 
@@ -43,39 +43,39 @@ func main() {
 		bootPartition = *targetDevice + "p3"
 	}
 
-	sh("parted", *targetDevice, "--", "mklabel", "gpt")
-	sh("parted", *targetDevice, "--", "mkpart", "primary", "512MiB", "-8GiB")
-	sh("parted", *targetDevice, "--", "mkpart", "primary", "linux-swap", "-8GiB", "100%")
-	sh("parted", *targetDevice, "--", "mkpart", "ESP", "fat32", "1MiB", "512MiB")
-	sh("parted", *targetDevice, "--", "set", "3", "esp", "on")
-	if *rootFileSystem == Ext4 {
-		sh("mkfs.ext4", rootPartition)
-		sh("mount", rootPartition, "/mnt")
-	} else if *rootFileSystem == Zfs {
+	execute("parted", *targetDevice, "--", "mklabel", "gpt")
+	execute("parted", *targetDevice, "--", "mkpart", "primary", "512MiB", "-8GiB")
+	execute("parted", *targetDevice, "--", "mkpart", "primary", "linux-swap", "-8GiB", "100%")
+	execute("parted", *targetDevice, "--", "mkpart", "ESP", "fat32", "1MiB", "512MiB")
+	execute("parted", *targetDevice, "--", "set", "3", "esp", "on")
+	if *rootFileSystem == ext4 {
+		execute("mkfs.ext4", rootPartition)
+		execute("mount", rootPartition, "/mnt")
+	} else if *rootFileSystem == zfs {
 		zfsPoolName := "zroot"
 		nixosZfsDataset := path.Join(zfsPoolName, "root")
-		sh("zpool", "create", "-O", "mountpoint=none", "-O", "atime=off",
+		execute("zpool", "create", "-O", "mountpoint=none", "-O", "atime=off",
 			"-O", "compression=zstd", "-O", "xattr=sa", "-O", "acltype=posixacl", "-o", "ashift=12", "-R", "/mnt", zfsPoolName, rootPartition)
-		sh("zfs", "create", "-o", "mountpoint=legacy", nixosZfsDataset)
-		sh("mount", "-t", "zfs", nixosZfsDataset, "/mnt")
+		execute("zfs", "create", "-o", "mountpoint=legacy", nixosZfsDataset)
+		execute("mount", "-t", "zfs", nixosZfsDataset, "/mnt")
 	}
 
-	sh("mkswap", swapPartition)
-	sh("mkfs.fat", "-F", "32", "-n", "boot", bootPartition)
+	execute("mkswap", swapPartition)
+	execute("mkfs.fat", "-F", "32", "-n", "boot", bootPartition)
 
-	sh("mkdir", "-p", "/mnt/boot")
-	sh("mount", bootPartition, "/mnt/boot")
-	sh("swapon", swapPartition)
-	sh("nixos-generate-config", "--root", "/mnt")
+	execute("mkdir", "-p", "/mnt/boot")
+	execute("mount", bootPartition, "/mnt/boot")
+	execute("swapon", swapPartition)
+	execute("nixos-generate-config", "--root", "/mnt")
 
 	configFilePath := "/mnt/etc/nixos/configuration.nix"
 	content, err := os.ReadFile(configFilePath)
-	crash(err)
+	check(err)
 	regex := regexp.MustCompile("\n{\n")
 	newConfig := regex.ReplaceAllString(string(content), "\n{\n  networking.hostId = \"00000000\";\n")
 	//TODO correct permissions
-	crash(os.WriteFile(configFilePath, []byte(newConfig), os.ModePerm))
+	check(os.WriteFile(configFilePath, []byte(newConfig), os.ModePerm))
 
-	sh("nixos-install")
+	execute("nixos-install")
 
 }
