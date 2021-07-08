@@ -1,0 +1,17 @@
+* nixos-installer
+
+This will wipe fill drive
+
+#+begin_src sh
+go run main.go -device /dev/sda
+#+end_src
+
+** NVME
+
+for nvme devices use namespaced device eg /dev/nvme0n1
+
+** Filesystems
+
+By default installer will use ZFS
+
+if you want to use ext4  use -fs ext4 option
