@@ -1,6 +1,6 @@
 * nixos-installer
 
-This will wipe fill drive
+This will wipe full drive
 
 #+begin_src sh
 go run main.go -device /dev/sda
