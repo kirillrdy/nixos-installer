@@ -29,6 +29,8 @@ func execute(cmdName string, args ...string) {
 
 func main() {
 
+	compression := flag.Bool("compress", true, "use compression on ZFS pool")
+
 	rootFileSystem := flag.String("fs", zfs, "filesystem to use on root, currently ext4 and zfs")
 	targetDevice := flag.String("device", "", "Device to use ")
 	flag.Parse()
@@ -54,8 +56,16 @@ func main() {
 	} else if *rootFileSystem == zfs {
 		zfsPoolName := "zroot"
 		nixosZfsDataset := path.Join(zfsPoolName, "root")
-		execute("zpool", "create", "-O", "mountpoint=none", "-O", "atime=off",
-			"-O", "compression=zstd", "-O", "xattr=sa", "-O", "acltype=posixacl", "-o", "ashift=12", "-R", "/mnt", zfsPoolName, rootPartition)
+
+		createArgs := []string{
+			"create", "-O", "mountpoint=none", "-O", "atime=off",
+		}
+		if *compression {
+			createArgs = append(createArgs, "-O", "compression=zstd")
+		}
+		createArgs = append(createArgs, "xattr=sa", "-O", "acltype=posixacl", "-o", "ashift=12", "-R", "/mnt", zfsPoolName, rootPartition)
+
+		execute("zpool", createArgs...)
 		execute("zfs", "create", "-o", "mountpoint=legacy", nixosZfsDataset)
 		execute("mount", "-t", "zfs", nixosZfsDataset, "/mnt")
 	}
