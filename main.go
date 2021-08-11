@@ -63,7 +63,7 @@ func main() {
 		if *compression {
 			createArgs = append(createArgs, "-O", "compression=zstd")
 		}
-		createArgs = append(createArgs, "xattr=sa", "-O", "acltype=posixacl", "-o", "ashift=12", "-R", "/mnt", zfsPoolName, rootPartition)
+		createArgs = append(createArgs, "-O", "xattr=sa", "-O", "acltype=posixacl", "-o", "ashift=12", "-R", "/mnt", zfsPoolName, rootPartition)
 
 		execute("zpool", createArgs...)
 		execute("zfs", "create", "-o", "mountpoint=legacy", nixosZfsDataset)
