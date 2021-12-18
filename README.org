@@ -3,8 +3,15 @@
 This will wipe full drive
 
 #+begin_src sh
-go run main.go -device /dev/sda
+  go run main.go -device /dev/sda
 #+end_src
+
+Or using flakes
+
+#+begin_src sh
+  nix run github:kirillrdy/nixos-installer -- -device /dev/sda
+#+end_src
+
 
 ** NVME
 
