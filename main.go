@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -34,6 +35,11 @@ func main() {
 	rootFileSystem := flag.String("fs", zfs, "filesystem to use on root, currently ext4 and zfs")
 	targetDevice := flag.String("device", "", "Device to use ")
 	flag.Parse()
+
+	if *targetDevice == "" {
+		fmt.Print("Please provide device name via -device flag")
+		os.Exit(1)
+	}
 
 	rootPartition := *targetDevice + "1"
 	swapPartition := *targetDevice + "2"
