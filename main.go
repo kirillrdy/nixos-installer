@@ -31,6 +31,7 @@ func execute(cmdName string, args ...string) {
 func main() {
 
 	compression := flag.Bool("compress", true, "use compression on ZFS pool")
+	encryption := flag.Bool("encrypt", true, "use encryption on ZFS pool")
 
 	rootFileSystem := flag.String("fs", zfs, "filesystem to use on root, currently ext4 and zfs")
 	targetDevice := flag.String("device", "", "Device to use ")
@@ -68,6 +69,11 @@ func main() {
 		}
 		if *compression {
 			createArgs = append(createArgs, "-O", "compression=zstd")
+		}
+
+		if *encryption {
+			createArgs = append(createArgs, "-O", "encryption=aes-256-gcm")
+			createArgs = append(createArgs, "-O", "keyformat=passphrase")
 		}
 		createArgs = append(createArgs, "-O", "xattr=sa", "-O", "acltype=posixacl", "-o", "ashift=12", "-R", "/mnt", zfsPoolName, rootPartition)
 
