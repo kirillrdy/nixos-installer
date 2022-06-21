@@ -31,7 +31,7 @@ func execute(cmdName string, args ...string) {
 func main() {
 
 	compression := flag.Bool("compress", true, "use compression on ZFS pool")
-	encryption := flag.Bool("encrypt", true, "use encryption on ZFS pool")
+	encryption := flag.Bool("encrypt", false, "use encryption on ZFS pool")
 
 	rootFileSystem := flag.String("fs", zfs, "filesystem to use on root, currently ext4 and zfs")
 	targetDevice := flag.String("device", "", "Device to use ")
