@@ -9,13 +9,6 @@
       let pkgs = nixpkgs.legacyPackages."${system}";
       in
       {
-
-        devShell = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            python3Packages.poetry
-          ];
-        };
-
         defaultPackage = pkgs.stdenv.mkDerivation {
           name = "nixos-installer";
           src = ./.;
@@ -29,11 +22,6 @@
             mv nixos-installer $out/bin
           '';
         };
-
-        defaultApp = utils.lib.mkApp {
-          drv = self.defaultPackage."${system}";
-        };
-
       }; in with utils.lib; eachSystem defaultSystems out;
 
 }
