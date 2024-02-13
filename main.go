@@ -65,7 +65,7 @@ func main() {
 		nixosZfsDataset := path.Join(zfsPoolName, "root")
 
 		createArgs := []string{
-			"create", "-O", "mountpoint=none", "-O", "atime=off",
+			"create", "-f", "-O", "mountpoint=none", "-O", "atime=off",
 		}
 		if *compression {
 			createArgs = append(createArgs, "-O", "compression=zstd")
