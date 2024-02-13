@@ -75,7 +75,7 @@ func main() {
 			createArgs = append(createArgs, "-O", "encryption=aes-256-gcm")
 			createArgs = append(createArgs, "-O", "keyformat=passphrase")
 		}
-		createArgs = append(createArgs, "-O", "xattr=sa", "-O", "acltype=posixacl", "-o", "ashift=12", "-R", "/mnt", zfsPoolName, rootPartition)
+		createArgs = append(createArgs, "-O", "xattr=sa", "-O", "acltype=posixacl", "-O", "autotrim=on", "-o", "ashift=12", "-R", "/mnt", zfsPoolName, rootPartition)
 
 		execute("zpool", createArgs...)
 		execute("zfs", "create", "-o", "mountpoint=legacy", nixosZfsDataset)
