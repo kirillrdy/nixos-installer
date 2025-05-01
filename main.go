@@ -52,9 +52,11 @@ func main() {
 		bootPartition = *targetDevice + "p3"
 	}
 
+	swapPartitionSize := "-32GiB"
+
 	execute("parted", *targetDevice, "--", "mklabel", "gpt")
-	execute("parted", *targetDevice, "--", "mkpart", "primary", "512MiB", "-8GiB")
-	execute("parted", *targetDevice, "--", "mkpart", "primary", "linux-swap", "-8GiB", "100%")
+	execute("parted", *targetDevice, "--", "mkpart", "primary", "512MiB", swapPartitionSize)
+	execute("parted", *targetDevice, "--", "mkpart", "primary", "linux-swap", swapPartitionSize, "100%")
 	execute("parted", *targetDevice, "--", "mkpart", "ESP", "fat32", "1MiB", "512MiB")
 	execute("parted", *targetDevice, "--", "set", "3", "esp", "on")
 	if *rootFileSystem == ext4 {
