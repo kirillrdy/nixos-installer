@@ -32,6 +32,7 @@ func main() {
 
 	compression := flag.Bool("compress", true, "use compression on ZFS pool")
 	encryption := flag.Bool("encrypt", false, "use encryption on ZFS pool")
+	swapSize := flag.Int("swap", 32, "swap size in GiB")
 
 	rootFileSystem := flag.String("fs", zfs, "filesystem to use on root, currently ext4 and zfs")
 	targetDevice := flag.String("device", "", "Device to use ")
@@ -52,7 +53,7 @@ func main() {
 		bootPartition = *targetDevice + "p3"
 	}
 
-	swapPartitionSize := "-32GiB"
+	swapPartitionSize := fmt.Sprint("-", *swapSize, "GiB")
 
 	execute("parted", *targetDevice, "--", "mklabel", "gpt")
 	execute("parted", *targetDevice, "--", "mkpart", "primary", "512MiB", swapPartitionSize)
